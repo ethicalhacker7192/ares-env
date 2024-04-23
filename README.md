@@ -2,20 +2,19 @@
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://github.com/higan-emu/ares/blob/master/LICENSE)
 
-**ares** is a multi-system emulator that began development on October 14th, 2004.
-It is a descendant of [higan](https://github.com/higan-emu/higan) and [bsnes](https://github.com/bsnes-emu/bsnes/), and focuses on accuracy and preservation.
+**ares-env** is a child of a very decent multi-system emulator called [ares](https://github.com/ares-emulator/ares) that began development on October 14th, 2004, all credit to the original developers.
+
+It is a descendant of [higan](https://github.com/higan-emu/higan), [ares](https://github.com/ares-emulator/ares), and [bsnes](https://github.com/bsnes-emu/bsnes/). This fork focuses on setting up AI environments and removing the fun--ahem, hassle of endlessly debugging virtual controllers, capturing the screen, etc., so AI development can be faster and easier with minimal time wasted by fidgeting with virtual controllers and all that fun--I mean boring stuff. ares-env can also be used for research purposes, similar to OpenAI's [gym-retro](https://github.com/OpenAI/retro) which unfortunately had been abandoned for later versions of python3.
 
 Official Releases
 -----------------
 
-Official releases are available from
-[the ares website](https://ares-emu.net).
+Will release in the future...
 
 Nightly Builds
 --------------
 
-Automated, untested builds of ares are available for Windows and macOS as a [pre-release](https://github.com/higan-emu/ares/releases/tag/nightly). 
-Only the latest nightly build is kept.
+None, still in development...
 
 Prerequisites
 -------------
@@ -175,4 +174,4 @@ High-level Components
 Contributing
 ------------
 
-Please join our discord to chat with other ares developers: https://discord.com/invite/gz2quhk2kv
+Please join [here.](https://github.com/GuineaBot3Labs/join)
