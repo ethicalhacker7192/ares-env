@@ -51,7 +51,11 @@ jobs:
           windres: rc
           shell: bash
           msvc-arch: x64_arm64
-        - name: macos
+        - name: macos-compat
+          os: macos-12
+          compiler: clang++
+          shell: sh
+        - name: macos-latest
           os: macos-latest
           compiler: clang++
           shell: sh
@@ -86,7 +90,7 @@ jobs:
         keychain-name: ares-macos-keychain
         keychain-password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
     - name: Checkout source code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Install Windows Dependencies
       if: runner.os == 'Windows'
       run: |
@@ -107,23 +111,22 @@ jobs:
         fi
     - name: "macOS: recover MoltenVK cache"
       if: runner.os == 'macOS'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
           cache-name: moltenvk
       with:
           path: thirdparty/MoltenVK/MoltenVK
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/MoltenVK/HEAD') }}
-    - name: "macOS: recover SDL cache"
-      if: runner.os == 'macOS'
-      uses: actions/cache@v3
-      env:
-          cache-name: sdl
-      with:
-          path: thirdparty/SDL/SDL
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('thirdparty/SDL/HEAD') }}
     - name: Install macOS Dependencies
       if: runner.os == 'macOS'
       run: |
+        if [ $ImageOS == "macos14" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+            echo "Set Xcode version to 15.2 for macos-latest build."
+        elif [ $ImageOS == "macos12" ]; then
+            sudo xcode-select -s /Applications/Xcode_13.4.app/Contents/Developer
+            echo "Set Xcode version to 13.4 for macos-compat build."
+        fi
         brew install make ninja cmake
         pip install --no-input setuptools
         rustup toolchain install nightly
@@ -178,7 +181,7 @@ jobs:
         MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
         MACOS_NOTARIZATION_TEAMID: ${{ secrets.MACOS_NOTARIZATION_TEAMID }}
     - name: Upload
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.program }}-${{ matrix.platform.name }}
         path: desktop-ui/out/*
@@ -190,11 +193,11 @@ jobs:
     needs:
     - build
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         path: 'src'
     - name: Download Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         path: 'bin'
     - name: Package Artifacts
@@ -210,9 +213,10 @@ jobs:
         bindir="${GITHUB_WORKSPACE}/bin"
 
         # Hack: Workaround for GitHub artifacts losing attributes.
-        chmod +x ${bindir}/ares-macos/ares.app/Contents/MacOS/ares
+        chmod +x ${bindir}/ares-macos-latest/ares.app/Contents/MacOS/ares
+        chmod +x ${bindir}/ares-macos-compat/ares.app/Contents/MacOS/ares
 
-        for package in windows windows-msvc-arm64 macos
+        for package in windows windows-msvc-arm64 macos-latest macos-compat
         do
           mkdir "${package}"
           cd "${package}"
@@ -312,10 +316,14 @@ jobs:
       uses: actions/upload-release-asset@v1
       env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
       with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-windows-msvc-arm64.zip', asset_name: 'ares-windows-msvc-arm64.zip', asset_content_type: 'application/zip' }      
-    - name: Upload ares-macos
+    - name: Upload ares-macos-latest
       uses: actions/upload-release-asset@v1
       env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
-      with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-macos.zip', asset_name: 'ares-macos.zip', asset_content_type: 'application/zip' }
+      with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-macos-latest.zip', asset_name: 'ares-macos-latest.zip', asset_content_type: 'application/zip' }
+    - name: Upload ares-macos-compat
+      uses: actions/upload-release-asset@v1
+      env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+      with: { upload_url: '${{ env.UPLOAD_URL }}', asset_path: 'ares-macos-compat.zip', asset_name: 'ares-macos-compat.zip', asset_content_type: 'application/zip' }
 #  - name: Upload ares-ubuntu
 #      uses: actions/upload-release-asset@v1
 #      env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
