@@ -107,15 +107,20 @@ struct PPU : Thread {
     auto serialize(serializer&) -> void;
 
     n8 id = 64;
-    union {
-      n8 data[4];
-      struct {
-        n8 y = 0xff;
-        n8 tile = 0xff;
-        n8 attr = 0xff;
-        n8 x = 0xff;
-      };
-    };
+    n8 y = 0xff;
+    n8 tile = 0xff;
+    n8 attr = 0xff;
+    n8 x = 0xff;
+
+    auto operator[](n2 timing) -> n8& {
+      switch(timing) {
+      case 0: return y;
+      case 1: return tile;
+      case 2: return attr;
+      case 3: return x;
+      }
+      return y;
+    }
 
     n8 tiledataLo;
     n8 tiledataHi;
@@ -127,9 +132,6 @@ struct PPU : Thread {
     n16 tiledataLo;
     n16 tiledataHi;
 
-    n16 oamIterator;
-    n16 oamCounter;
-
     OAM oam[8];   //primary
   } latch;
 
@@ -137,14 +139,21 @@ struct PPU : Thread {
     Memory::Writable<n8> oam;
 
     // sprite.cpp
+    auto load() -> void;
+    auto unload() -> void;
+
     auto main() -> void;
     auto power(bool reset) -> void;
+
+    // memory.cpp
+    auto oamData() -> n8 const;
+    auto oamData(n8 data) -> void;
 
     // serialization.cpp
     auto serialize(serializer&) -> void;
 
     struct IO {
-      // $2002
+      // $2002 bit5
       n1 spriteOverflow;
 
       // $2003
@@ -153,13 +162,13 @@ struct PPU : Thread {
       // $2004
       n8 oamData;
 
-      // main oam counter
-      n8 oamMainCounter;
+      // main oam counter (oamAddress)
+      BitRange<8,0,7> oamMainCounter{&oamAddress};
       bool oamMainCounterOverflow;
       // every sprite has 4 bytes
-      BitRange<8,0,1> oamMainCounterTiming{&oamMainCounter};
+      BitRange<8,0,1> oamMainCounterTiming{&oamAddress};
       // main counter have 64 sprites
-      BitRange<8,2,7> oamMainCounterIndex{&oamMainCounter};
+      BitRange<8,2,7> oamMainCounterIndex{&oamAddress};
 
       // secondary oam counter
       n5  oamTempCounter;
@@ -174,6 +183,13 @@ struct PPU : Thread {
   } spriteEvaluation;
 
   u32* output;
+
+  static constexpr u8 cgramBootValue[32] = {
+    0x09, 0x01, 0x00, 0x01, 0x00, 0x02, 0x02, 0x0D,
+    0x08, 0x10, 0x08, 0x24, 0x00, 0x00, 0x04, 0x2C,
+    0x09, 0x01, 0x34, 0x03, 0x00, 0x04, 0x00, 0x14,
+    0x08, 0x3A, 0x00, 0x02, 0x00, 0x20, 0x2C, 0x08,
+  };
 };
 
 extern PPU ppu;
