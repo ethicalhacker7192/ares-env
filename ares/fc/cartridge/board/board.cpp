@@ -56,6 +56,10 @@ namespace Board {
 #include "taito-x1-017.cpp"
 #include "unrom-512.cpp"
 
+#include "unl-bmc.cpp"
+#include "unl-sachen-74ls374n.cpp"
+#include "unl-txc.cpp"
+
 auto Interface::create(string board) -> Interface* {
   Interface* p = nullptr;
   if(!p) p = Action53::create(board);
@@ -113,6 +117,11 @@ auto Interface::create(string board) -> Interface* {
   if(!p) p = TaitoX1005::create(board);
   if(!p) p = TaitoX1017::create(board);
   if(!p) p = UNROM512::create(board);
+
+  if(!p) p = BMC::create(board);
+  if(!p) p = Sachen74LS374N::create(board);
+  if(!p) p = TXC::create(board);
+
   if(!p) p = new Interface;
   return p;
 }
