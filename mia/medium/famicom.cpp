@@ -446,6 +446,11 @@ auto Famicom::analyzeINES(vector<u8>& data) -> string {
     s += "    chip type=TC0690\n";
     break;
 
+  case  64:
+    s += "  board:  TENGEN-800032\n";
+    s += "    chip type=RAMBO-1\n";
+    break;
+
   case  65:
     s += "  board:  IREM-H3001\n";
     s += "    chip type=H3001\n";
@@ -474,6 +479,15 @@ auto Famicom::analyzeINES(vector<u8>& data) -> string {
   case  70:
     s += "  board:  BANDAI-74161\n";
     s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
+    break;
+
+  case  71:
+    if(submapper == 1) {
+      s += "  board:  CAMERICA-BF9097\n";
+    } else {
+      s += "  board:  CAMERICA-BF9093\n";
+      s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
+    }
     break;
 
   case  72:
@@ -610,6 +624,11 @@ auto Famicom::analyzeINES(vector<u8>& data) -> string {
     s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
     break;
 
+  case 148:
+    s += "  board:  UNL-SA-0037\n";
+    s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
+    break;
+
   case 150:
     s += "  board:  UNL-Sachen-74LS374N\n";
     break;
@@ -642,6 +661,11 @@ auto Famicom::analyzeINES(vector<u8>& data) -> string {
     s += "    chip type=LZ93D50\n";
     prgnvram = 256;
     eepromMapper = true;
+    break;
+
+  case 158:
+    s += "  board:  TENGEN-800037\n";
+    s += "    chip type=RAMBO-1\n";
     break;
 
   case 159:
@@ -712,6 +736,16 @@ auto Famicom::analyzeINES(vector<u8>& data) -> string {
 
   case 229:
     s += "  board:  UNL-BMC-32\n";
+    break;
+
+  case 232:
+    if(submapper == 1) {
+      s += "  board:  CAMERICA-BF9096A\n";
+      s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
+    } else {
+      s += "  board:  CAMERICA-BF9096\n";
+      s +={"    mirror mode=", !mirror ? "horizontal" : "vertical", "\n"};
+    }
     break;
 
   case 243:
