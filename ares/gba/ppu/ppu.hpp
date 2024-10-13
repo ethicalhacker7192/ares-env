@@ -10,11 +10,20 @@ struct PPU : Thread, IO {
   struct Debugger {
     //debugger.cpp
     auto load(Node::Object) -> void;
+    auto unload(Node::Object) -> void;
 
     struct Memory {
       Node::Debugger::Memory vram;
       Node::Debugger::Memory pram;
     } memory;
+
+    struct Graphics {
+      Node::Debugger::Graphics tiles4bpp;
+      Node::Debugger::Graphics tiles8bpp;
+      Node::Debugger::Graphics mode3;
+      Node::Debugger::Graphics mode4;
+      Node::Debugger::Graphics mode5;
+    } graphics;
   } debugger;
 
   //ppu.cpp
@@ -61,7 +70,7 @@ private:
 
   struct IO {
     n1  gameBoyColorMode;
-    n1  forceBlank;
+    n1  forceBlank[4];
     n1  greenSwap;
 
     n1  vblank;
@@ -88,6 +97,7 @@ private:
 
   struct Background {
     //background.cpp
+    auto setEnable(n1 status) -> void;
     auto scanline(u32 y) -> void;
     auto run(u32 x, u32 y) -> void;
     auto linear(u32 x, u32 y) -> void;
@@ -106,7 +116,7 @@ private:
       static n5 mosaicWidth;
       static n5 mosaicHeight;
 
-      n1 enable;
+      n1 enable[4];
 
       n2 priority;
       n2 characterBase;
@@ -153,6 +163,7 @@ private:
 
   struct Objects {
     //object.cpp
+    auto setEnable(n1 status) -> void;
     auto scanline(u32 y) -> void;
     auto run(u32 x, u32 y) -> void;
     auto power() -> void;
@@ -161,7 +172,7 @@ private:
     auto serialize(serializer&) -> void;
 
     struct IO {
-      n1 enable;
+      n1 enable[4];
 
       n1 hblank;   //1 = allow access to OAM during Hblank
       n1 mapping;  //0 = two-dimensional, 1 = one-dimensional

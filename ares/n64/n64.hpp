@@ -20,7 +20,14 @@ using v128 = __m128i;
 #endif
 
 #if defined(VULKAN)
+  #if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wnewline-eof"
+  #endif
   #include <n64/vulkan/vulkan.hpp>
+  #if defined(__clang__)
+    #pragma clang diagnostic pop
+  #endif
 #endif
 
 // Include the GB core, we can use its cartridge emulation for Transfer Pak
